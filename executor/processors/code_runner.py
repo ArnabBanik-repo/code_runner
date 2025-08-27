@@ -2,8 +2,8 @@ import subprocess
 
 from datetime import datetime
 
-from enums.language_enum import Language
-from util import create_logger, decode_base64
+from executor.enums.language_enum import Language
+from executor.util import create_logger, decode_base64
 
 CODE_FILE_NAME = "Main"
 CODE_FILE_PATH = "code"
@@ -101,7 +101,7 @@ def run(language: Language, code_b64: bytes, user_id: str) -> int:
 
 
 if __name__ == "__main__":
-    from util import encode_base64
+    from executor.util import encode_base64
     code = """
 public class Main {
 	public static void main(String[] args) {
