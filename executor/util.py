@@ -16,7 +16,7 @@ def create_logger(logger_name: str) -> logging.Logger:
     logger.addHandler(file_handler)
     return logger
 
-def decode_base64(encoded_str: str) -> str:
+def decode_base64(encoded_str: bytes) -> str:
     decoded_bytes = base64.b64decode(encoded_str)
     return decoded_bytes.decode('utf-8')
 

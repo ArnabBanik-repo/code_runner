@@ -61,7 +61,7 @@ def compile_code(language: Language, code_file: str):
                            capture_output=True)
             return True
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Compilation error: {e.stderr}")
+            raise RuntimeError(e.stderr.decode("utf-8"))
 
 
 def execute_code(language: Language, code_file: str) -> str:
@@ -72,7 +72,7 @@ def execute_code(language: Language, code_file: str) -> str:
                                     capture_output=True, text=True, shell=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Execution error: {e.stderr}")
+            raise RuntimeError({e.stderr.decode("utf-8")})
     return ""
 
 
@@ -86,9 +86,14 @@ def run(language: Language, code_b64: bytes, user_id: str) -> int:
         check_supported_language(language)
         check_compiler(language)
         code_file_name = create_code_file(language, code, user_id)
+    except Exception as e:
+        LOGGER.error(f"Compilation Error:\n{str(e)}")
+        return 1
+
+    try:
         compile_code(language, code_file_name)
     except Exception as e:
-        LOGGER.error(f"Error: {str(e)}")
+        LOGGER.error(f"Runtime Error:\n{str(e)}")
         return 1
 
     try:
@@ -102,13 +107,20 @@ def run(language: Language, code_b64: bytes, user_id: str) -> int:
 
 if __name__ == "__main__":
     from executor.util import encode_base64
-    code = """
+    sample_code = """
 public class Main {
+    private int add(int x, int y) {
+        return x + y;
+    }
 	public static void main(String[] args) {
-		System.out.println("Hello, world", "");
+		int a = 5;
+		int b = -9;
+		Main main = new Main();
+		int res = main.add(a, b);
+		System.out.println(res);
 	}
 }
 """
     run(Language.JAVA,
-        encode_base64(code),
+        encode_base64(sample_code),
         "user123")
