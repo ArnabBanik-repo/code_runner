@@ -1,0 +1,4 @@
+{
+    "reader_fifo_path": "tmp_fifo",
+    "writer_fifo_path": ""
+}

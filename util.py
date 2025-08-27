@@ -10,6 +10,7 @@ def create_logger(logger_name: str) -> logging.Logger:
     stream_handler = logging.StreamHandler()
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     stream_handler.setFormatter(formatter)
+    stream_handler.setLevel(logging.INFO)
     file_handler = logging.FileHandler(f'logs/{logger_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
     file_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)

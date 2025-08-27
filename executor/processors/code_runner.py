@@ -3,7 +3,7 @@ import subprocess
 from datetime import datetime
 
 from executor.enums.language_enum import Language
-from executor.util import create_logger, decode_base64
+from util import create_logger, decode_base64
 
 CODE_FILE_NAME = "Main"
 CODE_FILE_PATH = "code"
@@ -61,7 +61,7 @@ def compile_code(language: Language, code_file: str):
                            capture_output=True)
             return True
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(e.stderr.decode("utf-8"))
+            raise RuntimeError(e.stderr)
 
 
 def execute_code(language: Language, code_file: str) -> str:
@@ -69,17 +69,17 @@ def execute_code(language: Language, code_file: str) -> str:
     if language == Language.JAVA:
         try:
             result = subprocess.run(["java", CODE_FILE_NAME], cwd=CODE_FILE_PATH, check=True,
-                                    capture_output=True, text=True, shell=True)
+                                    capture_output=True, text=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            raise RuntimeError({e.stderr.decode("utf-8")})
+            raise RuntimeError(e.stderr)
     return ""
 
 
 def run(language: Language, code_b64: bytes, user_id: str) -> int:
     LOGGER.info("Starting code runner")
-
     try:
+        language = Language(language)
         if not user_id:
             raise ValueError("User ID is required.")
         code = decode_base64(code_b64)
@@ -106,7 +106,8 @@ def run(language: Language, code_b64: bytes, user_id: str) -> int:
 
 
 if __name__ == "__main__":
-    from executor.util import encode_base64
+    from util import encode_base64
+
     sample_code = """
 public class Main {
     private int add(int x, int y) {
@@ -121,6 +122,6 @@ public class Main {
 	}
 }
 """
-    run(Language.JAVA,
+    run(0,
         encode_base64(sample_code),
         "user123")
